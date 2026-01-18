@@ -73,7 +73,15 @@ const CandleStickChart = ({
 
     const series = chart.addSeries(CandlestickSeries, getCandlestickConfig());
 
-    const convertedOHLCData = convertOHLCData(ohlcData);
+    const convertedToSeconds: OHLCData[] = ohlcData.map((item) => [
+      Math.floor(item[0] / 1000),
+      item[1],
+      item[2],
+      item[3],
+      item[4],
+    ]);
+
+    const convertedOHLCData = convertOHLCData(convertedToSeconds);
 
     series.setData(convertedOHLCData);
 
@@ -98,7 +106,7 @@ const CandleStickChart = ({
       chartRef.current = null;
       chartContainerRef.current = null;
     };
-  }, [height]);
+  }, [height, period]);
 
   useEffect(() => {
     if (!candleSeriesRef.current) {
@@ -134,7 +142,7 @@ const CandleStickChart = ({
                 period === value ? "config-button-active" : "config-button"
               }
               onClick={() => handlePeriodChange(value)}
-              disabled={loading}
+              disabled={isPending}
             >
               {label}
             </button>
