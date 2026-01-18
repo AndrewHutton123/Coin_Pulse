@@ -14,7 +14,7 @@ type CandlestickChartProps = {
   mode?: "historical" | "live";
   initialPeriod?: Period;
   liveInterval: "1s" | "1m";
-  setLiveInterval: (interval: "1s" | "1m") => void;
+  setLiveInterval?: (interval: "1s" | "1m") => void;
 };
 
 type ConverterProps = {
