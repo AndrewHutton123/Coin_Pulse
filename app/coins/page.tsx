@@ -3,10 +3,20 @@ import Image from "next/image";
 import { cn, formatCurrency, formatPercentage } from "@/lib/utils";
 import DataTable from "@/components/DataTable";
 import Link from "next/link";
+import CoinsPagination from "@/components/CoinsPagination";
 
 const CoinsMarket = async ({ searchParams }: NextPageProps) => {
+  const { page } = await searchParams;
+  const currentPage = Number(page) || 1;
+  const perPage = 10;
+
   const coinMarketData = await fetcher<CoinMarketData[]>("coins/markets", {
     vs_currency: "usd",
+    order: "market_cap_desc",
+    per_page: perPage,
+    page: currentPage,
+    sparkline: "false",
+    price_change_percentage: "24h",
   });
 
   const columns: DataTableColumn<CoinMarketData>[] = [
@@ -66,6 +76,12 @@ const CoinsMarket = async ({ searchParams }: NextPageProps) => {
       cell: (coinData) => formatCurrency(coinData.market_cap),
     },
   ];
+
+  const hasMorePages = coinMarketData.length == perPage;
+
+  const estimatedTotalPages =
+    currentPage >= 100 ? Math.ceil(currentPage / 100) * 100 + 100 : 100;
+
   return (
     <main id="coins-page">
       <div className="content">
@@ -75,6 +91,12 @@ const CoinsMarket = async ({ searchParams }: NextPageProps) => {
           data={coinMarketData?.slice(0, 10)}
           rowKey={(coinData) => coinData.id}
           tableClassName="coins-table"
+        />
+
+        <CoinsPagination
+          currentPage={currentPage}
+          totalPages={estimatedTotalPages}
+          hasMorePages={hasMorePages}
         />
       </div>
     </main>
